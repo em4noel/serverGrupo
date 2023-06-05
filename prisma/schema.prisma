@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model adicional {
+  CODG_ADICIONAL   Int       @id @default(autoincrement())
+  CODG_REGISTRO    Int
+  DESC_LOCALIZADOR String?   @db.VarChar(80)
+  VALOR_TARIFA     Decimal?  @db.Decimal(10, 2)
+  QUANTIDADE       Decimal?  @db.Decimal(10, 0)
+  DESC_ORIGEM      String?   @db.VarChar(100)
+  DESC_DESTINO     String?   @db.VarChar(100)
+  DATA_VOO         DateTime? @db.Timestamp(0)
+  DATA_EMISSAO     DateTime? @db.Timestamp(0)
+  VALOR_SINAL      Decimal?  @db.Decimal(10, 2)
+  TRECHO           String?   @db.VarChar(10)
+  STATUS           String?   @db.VarChar(10)
+  CIA              String?   @db.VarChar(45)
+  reserva          reserva   @relation(fields: [CODG_REGISTRO], references: [CODG_REGISTRO], onDelete: NoAction, onUpdate: NoAction, map: "FK_CODG_REGISTRO_AD")
+
+  @@index([CODG_REGISTRO], map: "FK_CODG_REGISTRO_AD_idx")
+}
+
+model alerta {
+  ID_ALERTA  Int       @id @default(autoincrement())
+  DATE_ENVIO DateTime? @db.Date
+  ENVIO      String?   @db.VarChar(45)
+}
+
+model anexo {
+  ID_ANEXO        Int      @id @default(autoincrement())
+  STATUS          String?  @db.VarChar(20)
+  CAMINHO_ARQUIVO String?  @db.VarChar(200)
+  CODG_REGISTRO   Int?
+  reserva         reserva? @relation(fields: [CODG_REGISTRO], references: [CODG_REGISTRO], onDelete: NoAction, onUpdate: NoAction, map: "FK_COGD_REGISTRO")
+
+  @@index([CODG_REGISTRO], map: "FK_COGD_REGISTRO")
+}
+
+model cambio {
+  CODG_CAMBIO   Int       @id @default(autoincrement())
+  DESC_CAMBIO   String?   @db.VarChar(45)
+  VALOR_CAMBIO  Decimal?  @db.Decimal(10, 5)
+  DATA_CAMBIO   DateTime? @db.Timestamp(0)
+  DATA_CONTRATO DateTime? @db.Timestamp(0)
+}
+
+model contato {
+  ID_CONTATO    Int       @id @default(autoincrement())
+  DESC_CONTATO  String?   @db.VarChar(45)
+  DESC_ASSUNTO  String?   @db.MediumText
+  DESC_IMG      String?   @db.VarChar(45)
+  DATA_INCLUSAO DateTime? @db.Timestamp(0)
+}
+
+model cotacao {
+  CODG_COTACAO      Int       @id @default(autoincrement())
+  DESC_TRECHO       String?   @db.VarChar(10000)
+  DESC_DESTINATARIO String?   @db.VarChar(50)
+  DESC_PRAZO        String?   @db.VarChar(200)
+  QUANTIDADE_PAX    Int?
+  DESC_GRATUIDADE   String?   @db.VarChar(500)
+  DESC_BAGAGEM      String?   @db.VarChar(200)
+  DESC_FORMA_PG     String?   @db.VarChar(500)
+  VALOR_TARIFA      Decimal?  @db.Decimal(10, 0)
+  VALOR_TAXA        Decimal?  @db.Decimal(10, 0)
+  VALOR_TAXA_DU     Decimal?  @db.Decimal(10, 0)
+  VALOR_FEE         Decimal?  @db.Decimal(10, 0)
+  COMISSAO          Int?
+  DESC_ALERTA       String?   @db.VarChar(500)
+  DESC_CANCELAMENTO String?   @db.VarChar(500)
+  DESC_ALTERACAO    String?   @db.VarChar(500)
+  DESC_REEMBOLSO    String?   @db.VarChar(500)
+  DESC_ASSUNTOS     String?   @db.VarChar(500)
+  DATA_INCLUSAO     DateTime? @db.DateTime(0)
+  DESC_CIA          String?   @db.VarChar(50)
+  DESC_TIPO_GRUPO   String?   @db.VarChar(45)
+  DESC_TIPO_NAC     String?   @db.VarChar(45)
+}
+
+model reserva {
+  CODG_REGISTRO    Int         @id @default(autoincrement())
+  DESC_UNIDADE     String      @db.VarChar(200)
+  DESC_AGENCIA     String      @db.VarChar(500)
+  DESC_LOCALIZADOR String?     @db.VarChar(10)
+  DATA_CONTRATO    DateTime    @default(now()) @db.Timestamp(0)
+  DATA_LIMITE      DateTime?   @db.Timestamp(0)
+  VALOR_TARIFA     Decimal?    @db.Decimal(20, 2)
+  VALOR_TOTAL      Decimal     @db.Decimal(20, 2)
+  DESC_NOME        String      @db.VarChar(100)
+  DESC_EMAIL       String      @db.VarChar(100)
+  DESC_CIA         String      @db.VarChar(50)
+  DATA_INCLUSAO    DateTime    @db.Date
+  STATUS           String      @db.VarChar(50)
+  OBSERVACAO       String?     @db.VarChar(1000)
+  NUMERO_CONTRATO  String?     @db.VarChar(20)
+  DESC_EMAIL_ADD   String?     @db.VarChar(100)
+  DESC_TRECHO      String?     @db.VarChar(3)
+  QUANT_PAX        Decimal?    @db.Decimal(10, 0)
+  DESC_ORIGEM      String?     @db.VarChar(10)
+  DESC_DESTINO     String?     @db.VarChar(10)
+  DATA_VOO         DateTime?   @db.Timestamp(0)
+  DATA_EMISSAO     DateTime?   @db.Timestamp(0)
+  CODG_CAMBIO      Int?
+  DATA_VOO_VOLTA   DateTime?   @db.Date
+  HORA_IDA         DateTime?   @db.Timestamp(0)
+  HORA_VOLTA       DateTime?   @db.Timestamp(0)
+  adicional        adicional[]
+  anexo            anexo[]
+
+  @@index([CODG_CAMBIO], map: "FK_CODG_CAMBIO_idx")
+}
